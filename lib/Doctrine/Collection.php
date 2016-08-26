@@ -1079,4 +1079,17 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
         }
         return $dirty;
     }
+
+    /**
+     * Laravel-like simple method to filter records by callback.
+     *
+     * @param callable $callback Each record is given as first argument to callback function.
+     * @return static
+     */
+    public function filter(callable $callback)
+    {
+        $newCollection = new static($this->getTable(), $this->getKeyColumn());
+        $newCollection->setData(array_filter($this->data, $callback));
+        return $newCollection;
+    }
 }
