@@ -115,21 +115,33 @@ class Doctrine_Data_Import extends Doctrine_Data
     /**
      * Do the importing of the data parsed from the fixtures
      *
+     * @param bool $append
      * @return void
      */
     public function doImport($append = false)
     {
         $array = $this->doParsing();
-        printf("Finished parsing files.\n");
+        self::log('Finished parsing files');
 
-        if ( ! $append) {
-            printf("Purging data...");
+        if (!$append) {
+            self::log('Purging data...');
             $this->purge(array_reverse(array_keys($array)));
-            printf("done.\n");
+            self::log('done.');
         }
 
-        printf("Processing and saving data...\n");
+        self::log('Processing and saving data...');
         $this->_loadData($array);
+    }
+
+    protected static function log($message)
+    {
+        if (!class_exists('sfTask')
+            || !property_exists('sfTask', 'currentlyRunningTask')
+            || !(sfTask::$currentlyRunningTask instanceof sfTask)) {
+            return;
+        }
+
+        sfTask::$currentlyRunningTask->logSection('doctrine', $message);
     }
 
     /**
@@ -358,9 +370,9 @@ class Doctrine_Data_Import extends Doctrine_Data
 
                     if ($obj instanceof $model) {
                         if (method_exists($obj, '__toString')) {
-                            printf("Saving model: %s (%s)\n", $model, $obj);
+                            self::log(sprintf('Saving model: %s (%s)', $model, $obj));
                         } else {
-                            printf("Saving model: %s\n", $model);
+                            self::log(sprintf('Saving model: %s', $model));
                         }
 
                         $obj->save();
