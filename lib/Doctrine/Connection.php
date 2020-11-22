@@ -61,7 +61,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     protected $dbh;
 
     /**
-     * @var array $tables                       an array containing all the initialized Doctrine_Table objects
+     * @var \Doctrine_Table[] $tables                       an array containing all the initialized Doctrine_Table objects
      *                                          keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
     protected $tables           = array();
@@ -1260,10 +1260,14 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * clears all repositories
      *
      * @return void
+     * @throws \Doctrine_Table_Exception
      */
     public function clear()
     {
         foreach ($this->tables as $k => $table) {
+            if (!($table->getRepository() instanceof Doctrine_Table_Repository)) {
+                throw new Doctrine_Table_Exception(sprintf('Repository for table "%s" not exists', $k));
+            }
             $table->getRepository()->evictAll();
             $table->clear();
         }

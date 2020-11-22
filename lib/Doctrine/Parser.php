@@ -62,7 +62,7 @@ abstract class Doctrine_Parser
      * Get instance of the specified parser
      *
      * @param string $type
-     * @return void
+     * @return \Doctrine_Parser
      * @author Jonathan H. Wage
      */
     static public function getParser($type)
@@ -115,7 +115,7 @@ abstract class Doctrine_Parser
      * Either should allow php code in it.
      *
      * @param string $path
-     * @return void
+     * @return string
      */
     public function doLoad($path)
     {

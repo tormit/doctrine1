@@ -37,11 +37,11 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      *
      * Dump an array of data to a specified path or return
      *
-     * @throws Doctrine_Parser_Exception dumping error
-     * @param  string $array Array of data to dump to yaml
-     * @param  string $path  Path to dump the yaml to
+     * @param string $array Array of data to dump to yaml
+     * @param string $path Path to dump the yaml to
+     * @param null $charset
      * @return string $yaml
-     * @return void
+     * @throws \Doctrine_Parser_Exception dumping error
      */
     public function dumpData($array, $path = null, $charset = null)
     {
@@ -53,9 +53,7 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
 
         } catch(InvalidArgumentException $e) {
           // rethrow the exceptions
-          $rethrowed_exception = new Doctrine_Parser_Exception($e->getMessage(), $e->getCode());
-
-          throw $rethrowed_exception;
+            throw new Doctrine_Parser_Exception($e->getMessage(), $e->getCode());
         }
     }
 
@@ -64,9 +62,10 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
      *
      * Load and parse data from a yml file
      *
-     * @throws Doctrine_Parser_Exception parsing error
-     * @param  string  $path  Path to load yaml data from
+     * @param string $path Path to load yaml data from
+     * @param string $charset
      * @return array   $array Array of parsed yaml data
+     * @throws \Doctrine_Parser_Exception parsing error
      */
     public function loadData($path, $charset = 'UTF-8')
     {
@@ -77,15 +76,11 @@ class Doctrine_Parser_Yml extends Doctrine_Parser
            */
           $contents = $this->doLoad($path);
 
-          $array = sfYaml::load($contents, $charset);
-
-          return $array;
+          return sfYaml::load($contents);
 
         } catch(InvalidArgumentException $e) {
           // rethrow the exceptions
-          $rethrowed_exception = new Doctrine_Parser_Exception($e->getMessage(), $e->getCode());
-
-          throw $rethrowed_exception;
+            throw new Doctrine_Parser_Exception($e->getMessage(), $e->getCode());
         }
     }
 }

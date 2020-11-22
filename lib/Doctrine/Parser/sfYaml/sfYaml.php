@@ -109,7 +109,7 @@ class sfYaml
    * The dump method, when supplied with an array, will do its best
    * to convert the array into friendly YAML.
    *
-   * @param array   $array PHP array
+   * @param array|string   $array PHP array
    * @param integer $inline The level where you switch to inline YAML
    *
    * @return string A YAML string representing the original PHP array
