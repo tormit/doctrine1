@@ -862,10 +862,13 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
         // check for possible subqueries
         if (substr($trimmed, 0, 4) == 'FROM' || substr($trimmed, 0, 6) == 'SELECT') {
-            // parse subquery
-            $q = $this->createSubquery()->parseDqlQuery($trimmed);
-            $trimmed = $q->getSqlQuery();
-            $q->free();
+            $replacedWs = preg_replace('/\s+/i', ' ', $trimmed);
+            if (stripos($replacedWs, 'FROM (SELECT') === false) {
+                // parse subquery
+                $q = $this->createSubquery()->parseDqlQuery($trimmed);
+                $trimmed = $q->getSqlQuery();
+                $q->free();
+            }
         } else if (substr($trimmed, 0, 4) == 'SQL:') {
             $trimmed = substr($trimmed, 4);
         } else {
@@ -1289,10 +1292,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                     // mysql doesn't support LIMIT in subqueries
                     $list = $this->_conn->execute($subquery, $this->_execParams)->fetchAll(Doctrine_Core::FETCH_COLUMN);
-                    foreach ($list as &$v) {
-                        $v = $this->_conn->quote($v);
-                    }
-                    $subquery = implode(', ', $list);
+                    $subquery = implode(', ', array_map(array($this->_conn, 'quote'), $list));
 
                     break;
 
@@ -1358,8 +1358,8 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
 
                 if ($orderBy) {
                     $e = explode(',', $orderBy);
+                    $e = array_map('trim', $e);
                     foreach ($e as $v) {
-                        $v = trim($v);
                         if ( ! in_array($v, $this->_sqlParts['orderby'])) {
                             $this->_sqlParts['orderby'][] = $v;
                         }
@@ -2091,7 +2091,9 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
                 foreach ($this->_sqlParts['select'] as $field) {
                     // We only include aggregate expressions to count query
                     // This is needed because HAVING clause will use field aliases
-                    if (strpos($field, '(') !== false) {
+                    preg_match('/([\w\.]+) AS ([\w\.]+)/i', $field, $matches);
+                    $fieldReal = $matches[1];
+                    if (strpos($field, '(') !== false || stripos($having, $fieldReal) !== false) {
                         $selectFields .= ', ' . $field;
                     }
                 }

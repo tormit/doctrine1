@@ -1207,6 +1207,7 @@ abstract class Doctrine_Query_Abstract
         $copy->free();
 
         if ($componentsBefore !== $componentsAfter) {
+            // https://github.com/SlikNL/doctrine1/commit/7e0c2edb220f5b7fa12f762e26bc0d691984b8bf
             return Doctrine_Lib::arrayDiffSimple($componentsAfter, $componentsBefore);
         } else {
             return $componentsAfter;
