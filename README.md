@@ -13,6 +13,22 @@ UPDATES
 
 * Doctrine data load progress and debug information output
 
+
+#### 14th November 2013(Martin Ojaste)
+
+* Doctrine: Hack to disable fixture merge at table level
+
+Example:
+```yaml
+# If __doNotMerge is appended, this fixture won't be merged with other fixtures for same table
+# Used to allow project fixture to fully overwrite same fixture from plugins 
+TableName__doNotMerge:
+  row1:
+    title: Client picture upload
+    type: dynamic
+    ....: ....
+```
+
 #### 17th December 2013
 
 * Builder remove "object" from doc-block

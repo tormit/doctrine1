@@ -99,6 +99,16 @@ class Doctrine_Data_Import extends Doctrine_Data
             }
         }
 
+        //hack for disabling cascade :( @ 14th Nov 2013 (Martin Ojaste)
+        // @see README for details
+        foreach($array as $key => $value){
+            if(strpos($key,'__doNotMerge')){
+                $realKey = str_replace('__doNotMerge','',$key);
+                $array[$realKey] = $array[$key];
+                unset($array[$key]);
+            }
+        }
+
         return $array;
     }
 
